@@ -1,0 +1,5 @@
+falcon
+sqlalchemy
+gunicorn
+mysql-python
+alembic
