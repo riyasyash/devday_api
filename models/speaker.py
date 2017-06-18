@@ -3,6 +3,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 
 from db_manage import Base
+from helpers.db_helper import DBHelper
 
 
 class Speaker(Base):
@@ -19,20 +20,10 @@ class Speaker(Base):
         self.profile_url = profile_url if profile_url else "sample_url"
 
     def create(self,session):
-        try:
-            session.add(self)
-            session.commit()
-            return self
-        except Exception as e:
-            raise Exception(e.message)
+        return DBHelper().create(self,session)
 
-    def update(self, session, id, update_hash):
-        try:
-            speaker = session.query(Speaker).filter(Speaker.id == id).update(update_hash, synchronize_sessio=False)
-            session.commit()
-            return speaker
-        except Exception as e:
-            raise Exception(e.message)
+    def update(self, session, update_hash):
+        return DBHelper().update(self,session,update_hash)
 
     def as_json(self):
         return {

@@ -16,9 +16,6 @@ depends_on = None
 
 meta = sa.MetaData()
 
-speakers = sa.Table
-
-
 def upgrade():
     op.create_table(
         'speakers', meta,
