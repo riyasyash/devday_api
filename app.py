@@ -1,5 +1,7 @@
 import falcon
+import logging
 
+from falcon_cors import CORS
 from controllers.event_sessions_controller import EventSessionsController
 from controllers.events_controller import EventsController
 from controllers.locations_controller import LocationsController
@@ -9,8 +11,12 @@ from controllers.speakers_controller import SpeakersController
 from db_manage import Session
 from db_session_manager import SQLAlchemySessionManager
 
+cors = CORS(allow_origins_list=['http://localhost:5050'],
+            allow_all_headers=True,
+            allow_all_methods=True)
+
 app = application = falcon.API(middleware=[
-    SQLAlchemySessionManager(Session),
+    SQLAlchemySessionManager(Session),cors.middleware
 ])
 
 speaker_controller = SpeakersController()

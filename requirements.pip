@@ -3,3 +3,4 @@ sqlalchemy
 gunicorn
 mysql-python
 alembic
+falcon-cors
