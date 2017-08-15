@@ -13,6 +13,10 @@ class EventsController():
         try:
             if id:
                 event = self.session.query(Event).filter(Event.id == id).first()
+                if not event:
+                    resp.body = json.dumps({"status":"event not found"})
+                    resp.status = falcon.HTTP_404
+                    return
                 resp.body = json.dumps(event.as_json(), ensure_ascii=False)
             else:
                 events = self.session.query(Event).all()
@@ -33,7 +37,7 @@ class EventsController():
             description = request_data.get('description')
             event = Event(title=title, fk_location_id=location_id, meetup_link=meetup_link, description=description).create(self.session)
             resp.body = json.dumps(event.as_json(), ensure_ascii=False)
-            resp.status = falcon.HTTP_200
+            resp.status = falcon.HTTP_201
         except Exception as e:
             resp.body = json.dumps({'error': e.message}, ensure_ascii=False)
             resp.status = falcon.HTTP_400
@@ -42,9 +46,27 @@ class EventsController():
         try:
             request_data = json.loads(req.stream.read())
             event = self.session.query(Event).filter(Event.id == id).first()
+            if not event:
+                resp.body = json.dumps({"status": "event not found"})
+                resp.status = falcon.HTTP_404
+                return
             event = event.update(self.session, request_data)
             resp.body = json.dumps(event.as_json(), ensure_ascii=False)
-            resp.status = falcon.HTTP_200
+            resp.status = falcon.HTTP_201
+        except Exception as e:
+            resp.body = json.dumps({'error': e.message}, ensure_ascii=False)
+            resp.status = falcon.HTTP_400
+
+    def on_delete(self, req, resp, id):
+        try:
+            event = self.session.query(Event).filter(Event.id == id).first()
+            if not event:
+                resp.body = json.dumps({"status": "event not found"})
+                resp.status = falcon.HTTP_404
+                return
+            event = event.delete(self.session)
+            resp.body = json.dumps({"status":"successfuly deleted"}, ensure_ascii=False)
+            resp.status = falcon.HTTP_201
         except Exception as e:
             resp.body = json.dumps({'error': e.message}, ensure_ascii=False)
             resp.status = falcon.HTTP_400

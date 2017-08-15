@@ -35,7 +35,7 @@ class EventSession(Base):
             "id": self.id,
             "session_speaker": self.session_speaker.as_json(),
             "event": self.event.as_json(),
-            "date": self.date,
+            "date": self.date.isoformat(),
             "start_time": self.start_time,
             "end_time": self.end_time
         }
@@ -45,3 +45,6 @@ class EventSession(Base):
 
     def update(self, session, update_hash):
         return DBHelper().update(self, session, update_hash)
+
+    def delete(self, session):
+        return DBHelper().delete(self, session)

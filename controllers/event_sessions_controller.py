@@ -56,6 +56,7 @@ class EventSessionsController():
         try:
             event_session = self.session.query(EventSession).filter(EventSession.id == id).first()
             event_session.delete(self.session)
+            resp.body = json.dumps({'error': 'successfully deleted event session'}, ensure_ascii=False)
             resp.status = falcon.HTTP_200
         except Exception as e:
             resp.body = json.dumps({'error': e.message}, ensure_ascii=False)

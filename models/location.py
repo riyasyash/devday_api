@@ -29,3 +29,6 @@ class Location(Base):
 
     def update(self, session, update_hash):
         return DBHelper().update(self, session, update_hash)
+
+    def delete(self,session):
+        return DBHelper().delete(self, session)

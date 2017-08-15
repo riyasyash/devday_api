@@ -16,6 +16,10 @@ class SpeakersController():
                 resp.body = json.dumps([speaker.as_json() for speaker in speakers], ensure_ascii=False)
             else:
                 speaker = self.session.query(Speaker).filter(Speaker.id == id).first()
+                if not speaker:
+                    resp.body = json.dumps({"status":"speaker not found"}, ensure_ascii=False)
+                    resp.status = falcon.HTTP_200
+                    return
                 resp.body = json.dumps(speaker.as_json(), ensure_ascii=False)
             resp.status = falcon.HTTP_200
         except Exception as e:
@@ -41,9 +45,27 @@ class SpeakersController():
         try:
             request_data = json.loads(req.stream.read())
             speaker = self.session.query(Speaker).filter(Speaker.id == id).first()
+            if not speaker:
+                resp.body = json.dumps({"status": "speaker not found"}, ensure_ascii=False)
+                resp.status = falcon.HTTP_200
+                return
             speaker = speaker.update(self.session, request_data)
             resp.body = json.dumps(speaker.as_json(), ensure_ascii=False)
             resp.status = falcon.HTTP_200
+        except Exception as e:
+            resp.body = json.dumps({'error': e.message}, ensure_ascii=False)
+            resp.status = falcon.HTTP_400
+
+    def on_delete(self, req, resp, id):
+        try:
+            speaker = self.session.query(Speaker).filter(Speaker.id == id).first()
+            if not speaker:
+                resp.body = json.dumps({"status": "speaker not found"}, ensure_ascii=False)
+                resp.status = falcon.HTTP_200
+                return
+            speaker.delete(self.session)
+            resp.body = json.dumps({"status":"speaker deleted sucessfully"}, ensure_ascii=False)
+            resp.status = falcon.HTTP_201
         except Exception as e:
             resp.body = json.dumps({'error': e.message}, ensure_ascii=False)
             resp.status = falcon.HTTP_400
